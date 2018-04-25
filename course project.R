@@ -1,0 +1,119 @@
+
+
+#Loading Packages
+library(caret)
+library(knitr)
+library(rpart)
+library(rpart.plot)
+library(rattle)
+library(randomForest)
+
+set.seed(123)
+
+
+######################################################
+# Getting and Cleaning Data
+######################################################
+
+# Preparing for download
+Trainurl <- "http://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+Testurl  <- "http://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
+
+# download the datasets
+Training <- read.csv(url(Trainurl))
+Testing  <- read.csv(url(Testurl))
+
+# create a partition with the Training dataset 
+inTrain  <- createDataPartition(Training$classe, p=0.7, list=FALSE)
+Train <- Training[inTrain, ]
+Test  <- Training[-inTrain, ]
+
+# Cleaning variables with variables that have near zero values
+NZV <- nearZeroVar(Train)
+Train <- Train[, -NZV]
+Test  <- Test[, -NZV]
+
+# Removing the nomenclature columns
+Train <- Train[, -(1:5)]
+Test  <- Test[, -(1:5)]
+
+# Removing variables with too many NA values, 90% NA or more
+ToomanyNA    <- sapply(Train, function(x) mean(is.na(x))) > 0.90
+Train <- Train[, ToomanyNA==FALSE]
+Test  <- Test[, ToomanyNA==FALSE]
+
+
+
+######################################################
+# Prediction with Random Forests
+######################################################
+
+# Model Fit
+controlrf <- trainControl(method="cv", number=3, verboseIter=FALSE)
+modFitrf <- train(classe ~ ., data=Train, method="rf",
+                          trControl=controlrf)
+modFitrf$finalModel
+
+# Prediction on Test
+predictrf <- predict(modFitrf, newdata=Test)
+confMatrf <- confusionMatrix(predictrf, Test$classe)
+confMatrf
+
+# Plot
+plot(confMatrf$table, col = confMatrf$byClass, 
+     main = paste("Random Forest Accuracy =",
+                  round(confMatrf$overall['Accuracy'], 4)))
+
+
+
+######################################################
+# Prediction with Decision Trees
+######################################################
+
+# Model Fit
+modFitdt <- rpart(classe ~ ., data=Train, method="class")
+fancyRpartPlot(modFitdt)
+
+# Prediction on Test
+predictdf <- predict(modFitdt, newdata=Test, type="class")
+confMatdf <- confusionMatrix(predictdf, Test$classe)
+confMatdf
+
+# Plot
+plot(confMatdf$table, col = confMatdf$byClass, 
+     main = paste("Decision Tree Accuracy =",
+                  round(confMatdf$overall['Accuracy'], 4)))
+
+
+
+######################################################
+# Prediction with Generalized Boosted Regression
+######################################################
+
+# Model Fit
+controlgbm <- trainControl(method = "repeatedcv", number = 5, repeats = 1)
+modFitgbm <- train(classe ~ ., data=Train, method = "gbm",
+                    trControl = controlgbm, verbose = FALSE)
+modFitgbm$finalModel
+
+
+# Prediction on Test
+predictgbm <- predict(modFitgbm, newdata=Test)
+confMatgbm <- confusionMatrix(predictgbm, Test$classe)
+confMatgbm
+
+
+# Plot
+plot(confMatgbm$table, col = confMatgbm$byClass, 
+     main = paste("Generalized Boosted Regression Accuracy =", round(confMatgbm$overall['Accuracy'], 4)))
+
+
+
+######################################################
+# Applying most accurate model (Random Forest)
+######################################################
+
+predictionrf<- predict(modFitrf, newdata=Testing)
+predictionrf
+
+
