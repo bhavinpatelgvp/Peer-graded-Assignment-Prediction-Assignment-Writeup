@@ -1,9 +1,11 @@
 #Data
 
 #training data
+
 https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv
 
 #test data
+
 https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv
 
 library(caret); 
@@ -34,13 +36,17 @@ training <- read.csv(url(url.train), na.strings = c("NA", "", "#DIV0!"))
 testing <- read.csv(url(url.test), na.strings = c("NA", "", "#DIV0!"))
 
 #define the same columns
+
 sameColumsName <- colnames(training) == colnames(testing)
+
 colnames(training)[sameColumsName==FALSE]
 
 ## [1] "classe"
 
 #Data Cleaning
+
 training<-training[,colSums(is.na(training)) == 0]
+
 testing <-testing[,colSums(is.na(testing)) == 0]
 
 #Checking the column names of traning dataset
@@ -50,24 +56,34 @@ head(colnames(training))
 ## [4] "raw_timestamp_part_2" "cvtd_timestamp"       "new_window"  
 
 #The first 7 variables of the training data were deleted, because they are irrelevant to the prediction.
+
 training <- training[,8:dim(training)[2]]
+
 testing <- testing[,8:dim(testing)[2]]
 
 #Training, testing & validation data
 #The training dataset was separated into three parts: tranining part (60%), testing part (20%), and validation part (20%)
 
 set.seed(123)
+
 Seeddata1 <- createDataPartition(y = training$classe, p = 0.8, list = F)
+
 Seeddata2 <- training[Seeddata1,]
+
 validation <- training[-Seeddata1,]
+
 Training_data1 <- createDataPartition(y = Seeddata2$classe, p = 0.75, list = F)
+
 training_data2 <- Seeddata2[Training_data1,]
+
 testing_data <- Seeddata2[-Training_data1,]
 
 #Data exploration
+
 qplot(classe, fill = "4", data=training_data2, main="Distribution of Classes")
 
 #Findout the predictors
+
 names(training_data2[,-53])
 
 ##  [1] "roll_belt"            "pitch_belt"           "yaw_belt"            
@@ -90,9 +106,13 @@ names(training_data2[,-53])
 ## [52] "magnet_forearm_z"
 
 #Prediction model (Classification Tree model)
+
 model_tree <- rpart(classe ~ ., data=training_data2, method="class")
+
 prediction_tree <- predict(model_tree, testing_data, type="class")
+
 class_tree <- confusionMatrix(prediction_tree, testing_data$classe)
+
 class_tree
 
 ## Confusion Matrix and Statistics
@@ -128,13 +148,19 @@ class_tree
 ## Balanced Accuracy      0.8850   0.7900   0.7879   0.8139   0.8412
 
 #Checking the model_tree
+
 library(rpart.plot)
+
 rpart.plot(model_tree)
 
 #Random forest model
+
 forest_model <- randomForest(classe ~ ., data=training_data2, method="class")
+
 prediction_forest <- predict(forest_model, testing_data, type="class")
+
 random_forest <- confusionMatrix(prediction_forest, testing_data$classe)
+
 random_forest
 
 ## Confusion Matrix and Statistics
@@ -170,9 +196,13 @@ random_forest
 ## Balanced Accuracy      0.9996   0.9953   0.9930   0.9922   0.9986
 
 #Final prediction
+
 Prediction Algorithm and Confusion Matrix
+
 prediction1 <- predict(forest_model, newdata=testing_data)
+
 confusionMatrix(prediction1, testing_data$classe)
+
 ## Confusion Matrix and Statistics
 ## 
 ##           Reference
@@ -208,9 +238,12 @@ confusionMatrix(prediction1, testing_data$classe)
 The Random Forest is a much better predictive model than the Decision Tree, which has a larger accuracy (99.91%).Therefore, we don’t need to consider more important predictors for the Random Forest model
 
 #Conclusions
-In this study, the characteristics of predictors for both traning and testing datasets (train and test) are reduced. These characteristics are the percentage of NAs values, low variance, correlation and skewness. Therefore, the variables of the data sets are scaled. The training dataset is splitted into subtraining and validation parts to construct a predictive model and evaluate its accuracy. Decision Tree and Random Forest are applied.The Random Forest is a much better predictive model than the Decision Tree, which has a larger accuracy (99.91%).
-This project is reproducible and was done with the following environment:
+#In this study, the characteristics of predictors for both traning and testing datasets (train and test) are reduced. These #characteristics are the percentage of NAs values, low variance, correlation and skewness. Therefore, the variables of the data #sets are scaled. The training dataset is splitted into subtraining and validation parts to construct a predictive model and #evaluate its accuracy. Decision Tree and Random Forest are applied.The Random Forest is a much better predictive model than the #Decision Tree, which has a larger accuracy (99.91%).
+
+#This project is reproducible and was done with the following environment:
+
 sessionInfo()
+
 ## R version 3.2.5 (2016-04-14)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
 ## Running under: Windows 10 x64 (build 14393)
