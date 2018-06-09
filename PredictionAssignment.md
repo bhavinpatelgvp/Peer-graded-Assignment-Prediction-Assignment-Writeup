@@ -6,7 +6,10 @@ https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv
 #test data
 https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv
 
-library(caret); library(rpart);library(ggplot2);library(randomForest)
+library(caret); 
+library(rpart);
+library(ggplot2);
+library(randomForest)
 ## Loading required package: lattice
 ## Loading required package: ggplot2
 ## Warning: package 'randomForest' was built under R version 3.3.3
@@ -23,8 +26,11 @@ library(caret); library(rpart);library(ggplot2);library(randomForest)
 Check the training and testing data, identifying the missing data, "NA" and "#DIV/0!" as "NA" everywhere.
 
 url.train <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+
 url.test <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
+
 training <- read.csv(url(url.train), na.strings = c("NA", "", "#DIV0!"))
+
 testing <- read.csv(url(url.test), na.strings = c("NA", "", "#DIV0!"))
 
 #define the same columns
