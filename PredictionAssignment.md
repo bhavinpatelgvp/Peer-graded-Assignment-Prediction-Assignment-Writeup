@@ -11,20 +11,28 @@ https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv
 library(caret); 
 library(rpart);
 library(ggplot2);
-library(randomForest)
+library(randomForest);
+
 ## Loading required package: lattice
+
 ## Loading required package: ggplot2
+
 ## Warning: package 'randomForest' was built under R version 3.3.3
+
 ## randomForest 4.6-12
+
 ## Type rfNews() to see new features/changes/bug fixes.
 ## 
 ## Attaching package: 'randomForest'
+
 ## The following object is masked from 'package:ggplot2':
 ## 
 ##     margin
+
 ## Warning: package 'rpart.plot' was built under R version 3.3.3
 
 #Loading Data
+
 Check the training and testing data, identifying the missing data, "NA" and "#DIV/0!" as "NA" everywhere.
 
 url.train <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
@@ -50,6 +58,7 @@ training<-training[,colSums(is.na(training)) == 0]
 testing <-testing[,colSums(is.na(testing)) == 0]
 
 #Checking the column names of traning dataset
+
 head(colnames(training))
 
 ## [1] "X"                    "user_name"            "raw_timestamp_part_1"
@@ -87,22 +96,39 @@ qplot(classe, fill = "4", data=training_data2, main="Distribution of Classes")
 names(training_data2[,-53])
 
 ##  [1] "roll_belt"            "pitch_belt"           "yaw_belt"            
-##  [4] "total_accel_belt"     "gyros_belt_x"         "gyros_belt_y"        
-##  [7] "gyros_belt_z"         "accel_belt_x"         "accel_belt_y"        
+
+##  [4] "total_accel_belt"     "gyros_belt_x"         "gyros_belt_y"     
+
+##  [7] "gyros_belt_z"         "accel_belt_x"         "accel_belt_y"      
+
 ## [10] "accel_belt_z"         "magnet_belt_x"        "magnet_belt_y"       
-## [13] "magnet_belt_z"        "roll_arm"             "pitch_arm"           
-## [16] "yaw_arm"              "total_accel_arm"      "gyros_arm_x"         
-## [19] "gyros_arm_y"          "gyros_arm_z"          "accel_arm_x"         
+
+## [13] "magnet_belt_z"        "roll_arm"             "pitch_arm"       
+
+## [16] "yaw_arm"              "total_accel_arm"      "gyros_arm_x"       
+
+## [19] "gyros_arm_y"          "gyros_arm_z"          "accel_arm_x"        
+
 ## [22] "accel_arm_y"          "accel_arm_z"          "magnet_arm_x"        
+
 ## [25] "magnet_arm_y"         "magnet_arm_z"         "roll_dumbbell"       
+
 ## [28] "pitch_dumbbell"       "yaw_dumbbell"         "total_accel_dumbbell"
+
 ## [31] "gyros_dumbbell_x"     "gyros_dumbbell_y"     "gyros_dumbbell_z"    
+
 ## [34] "accel_dumbbell_x"     "accel_dumbbell_y"     "accel_dumbbell_z"    
+
 ## [37] "magnet_dumbbell_x"    "magnet_dumbbell_y"    "magnet_dumbbell_z"   
+
 ## [40] "roll_forearm"         "pitch_forearm"        "yaw_forearm"         
+
 ## [43] "total_accel_forearm"  "gyros_forearm_x"      "gyros_forearm_y"     
+
 ## [46] "gyros_forearm_z"      "accel_forearm_x"      "accel_forearm_y"     
+
 ## [49] "accel_forearm_z"      "magnet_forearm_x"     "magnet_forearm_y"    
+
 ## [52] "magnet_forearm_z"
 
 #Prediction model (Classification Tree model)
@@ -116,35 +142,54 @@ class_tree <- confusionMatrix(prediction_tree, testing_data$classe)
 class_tree
 
 ## Confusion Matrix and Statistics
+
 ## 
 ##           Reference
+
 ## Prediction   A   B   C   D   E
+
 ##          A 944 111   7  53  42
+
 ##          B  53 492  51  59  53
+
 ##          C  49  98 447  54  51
+
 ##          D  47  33 178 468  70
+
 ##          E  23  25   1   9 505
 ## 
 ## Overall Statistics
 ##                                           
-##                Accuracy : 0.728           
+##                Accuracy : 0.728        
+
 ##                  95% CI : (0.7138, 0.7419)
-##     No Information Rate : 0.2845          
-##     P-Value [Acc > NIR] : < 2.2e-16       
+
+##     No Information Rate : 0.2845         
+
+##     P-Value [Acc > NIR] : < 2.2e-16     
 ##                                           
-##                   Kappa : 0.6559          
+##                   Kappa : 0.6559       
+
 ##  Mcnemar's Test P-Value : < 2.2e-16       
 ## 
 ## Statistics by Class:
 ## 
 ##                      Class: A Class: B Class: C Class: D Class: E
+
 ## Sensitivity            0.8459   0.6482   0.6535   0.7278   0.7004
+
 ## Specificity            0.9241   0.9317   0.9222   0.9000   0.9819
+
 ## Pos Pred Value         0.8159   0.6949   0.6395   0.5879   0.8970
+
 ## Neg Pred Value         0.9378   0.9170   0.9265   0.9440   0.9357
+
 ## Prevalence             0.2845   0.1935   0.1744   0.1639   0.1838
+
 ## Detection Rate         0.2406   0.1254   0.1139   0.1193   0.1287
+
 ## Detection Prevalence   0.2949   0.1805   0.1782   0.2029   0.1435
+
 ## Balanced Accuracy      0.8850   0.7900   0.7879   0.8139   0.8412
 
 #Checking the model_tree
